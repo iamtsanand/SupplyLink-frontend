@@ -35,9 +35,27 @@ export const fetchRequirementsByState = (state) => {
   return api.get(`/requirements/state/${state}`);
 };
 
+
 export const postNewRequirement = (requirementData) => {
   // Makes a POST request to http://localhost:8001/api/requirements
   return api.post('/requirements', requirementData);
+};
+
+// Add a function to fetch requirements by the vendor's user ID
+export const fetchRequirementsByVendor = (clerkUserId) => {
+  if (!clerkUserId) return Promise.resolve({ data: [] });
+  // You will need to create this backend route
+  return api.get(`/requirements/vendor/${clerkUserId}`); 
+};
+
+// Add a function to update a requirement
+export const updateRequirement = (id, requirementData) => {
+  return api.put(`/requirements/${id}`, requirementData);
+};
+
+// Add a function to delete a requirement
+export const deleteRequirement = (id) => {
+  return api.delete(`/requirements/${id}`);
 };
 
 /**

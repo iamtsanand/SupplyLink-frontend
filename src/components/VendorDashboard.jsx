@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
 import { PlusCircle, ShoppingCart, TrendingDown, Clock } from 'lucide-react';
-import { postNewRequirement } from '../utils/api'; // Import the API function
-import { isBiddingWindowActive, getTimeToNextWindow } from '../utils/time'; // Import time utilities
+import { postNewRequirement } from '../utils/api';
+import { isBiddingWindowActive } from '../utils/time';
+import MyRequirements from './MyRequirements'; // Import the new component
 
 const RequirementForm = ({ pincode, onRequirementSubmit }) => {
-    const { userId } = useAuth(); // Get the current user's Clerk ID
-    const { user } = useUser(); // Get the full user object for metadata
+    const { userId } = useAuth();
+    const { user } = useUser();
     
     const [item, setItem] = useState('');
     const [quantity, setQuantity] = useState('');
-    const [unit, setUnit] = useState('kg'); // Add a state for the unit
+    const [unit, setUnit] = useState('kg');
     const [price, setPrice] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const biddingActive = isBiddingWindowActive(); // Check if bidding is active
+    const biddingActive = isBiddingWindowActive();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,27 +36,24 @@ const RequirementForm = ({ pincode, onRequirementSubmit }) => {
             unit,
             price: Number(price),
             pincode,
-            state: user.unsafeMetadata?.state, // Get state from user metadata
+            state: user.unsafeMetadata?.state,
         };
 
         try {
             const response = await postNewRequirement(requirementData);
             alert(`New Requirement Submitted Successfully!`);
-            onRequirementSubmit(response.data); // Notify parent component of the new requirement
-            // Reset form
+            onRequirementSubmit(response.data);
             setItem('');
             setQuantity('');
             setUnit('kg');
             setPrice('');
         } catch (error) {
-            console.error("Failed to submit requirement:", error);
-            alert("Error: Could not submit your requirement. Please try again.");
+            alert("Error: Could not submit your requirement.");
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Conditionally render the form or a message based on the bidding window
     if (biddingActive) {
         return (
             <div className="bg-white p-6 rounded-lg shadow">
@@ -76,15 +74,15 @@ const RequirementForm = ({ pincode, onRequirementSubmit }) => {
             <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
                 <div className="md:col-span-2">
                     <label htmlFor="item" className="block text-sm font-medium text-gray-700">Item Name</label>
-                    <input type="text" id="item" value={item} onChange={e => setItem(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+                    <input type="text" id="item" value={item} onChange={e => setItem(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
                 </div>
                 <div>
                     <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Quantity</label>
-                    <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+                    <input type="number" id="quantity" value={quantity} onChange={e => setQuantity(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
                 </div>
                 <div>
                     <label htmlFor="unit" className="block text-sm font-medium text-gray-700">Unit</label>
-                    <select id="unit" value={unit} onChange={e => setUnit(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 bg-white py-2">
+                    <select id="unit" value={unit} onChange={e => setUnit(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-white py-2">
                         <option>kg</option>
                         <option>grams</option>
                         <option>liters</option>
@@ -95,7 +93,7 @@ const RequirementForm = ({ pincode, onRequirementSubmit }) => {
                 </div>
                 <div>
                     <label htmlFor="price" className="block text-sm font-medium text-gray-700">Expected Price</label>
-                    <input type="number" id="price" value={price} onChange={e => setPrice(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" required />
+                    <input type="number" id="price" value={price} onChange={e => setPrice(e.target.value)} className="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
                 </div>
                 <div className="md:col-span-5">
                      <button type="submit" disabled={isSubmitting} className="w-full md:w-auto mt-2 bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700 transition disabled:bg-blue-300">
@@ -111,15 +109,16 @@ const VendorDashboard = ({ pincode, aggregatedDemands, onRequirementSubmit }) =>
     return (
         <div className="space-y-8">
             <h2 className="text-3xl font-bold text-gray-900">Vendor Dashboard</h2>
-            {/* Pass the handler function down to the form */}
             <RequirementForm pincode={pincode} onRequirementSubmit={onRequirementSubmit} />
+
+                        {/* Add the new component to the dashboard */}
+            <MyRequirements />
             
             <div className="bg-white p-6 rounded-lg shadow">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
                     <ShoppingCart className="mr-2 text-green-600" /> Live Market View (Pincode: {pincode})
                 </h3>
                 <div className="space-y-4">
-                    {/* The aggregatedDemands prop will now be up-to-date */}
                     {Object.keys(aggregatedDemands).length > 0 ? Object.entries(aggregatedDemands).map(([item, data]) => (
                         <div key={item} className="p-4 border border-gray-200 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center">
                             <div>
