@@ -66,4 +66,13 @@ export const postBid = (bidData) => {
   return api.post('/bids', bidData);
 };
 
+/**
+ * Fetches all past deals with populated user names.
+ * @returns {Promise<Object>} A promise that resolves to the past deals data.
+ */
+export const fetchPastDeals = () => {
+  // Makes a GET request to http://localhost:8001/api/deals
+  return api.get('/deals');
+};
+
 export default api;

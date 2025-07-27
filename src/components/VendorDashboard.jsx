@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useAuth, useUser } from '@clerk/clerk-react';
-import { PlusCircle, ShoppingCart, TrendingDown } from 'lucide-react';
+import { PlusCircle, ShoppingCart, TrendingDown, Clock } from 'lucide-react';
 import { postNewRequirement } from '../utils/api'; // Import the API function
+import { isBiddingWindowActive, getTimeToNextWindow } from '../utils/time'; // Import time utilities
 
 const RequirementForm = ({ pincode, onRequirementSubmit }) => {
     const { userId } = useAuth(); // Get the current user's Clerk ID
@@ -13,21 +14,27 @@ const RequirementForm = ({ pincode, onRequirementSubmit }) => {
     const [price, setPrice] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const biddingActive = isBiddingWindowActive(); // Check if bidding is active
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (biddingActive) {
+            alert("You cannot post new requirements while a bidding session is active.");
+            return;
+        }
         if (!userId || !user) {
             alert("You must be logged in to post a requirement.");
             return;
         }
         setIsSubmitting(true);
-        // console.log('pincode: ',user.unsafeMetadata.pincode);
+
         const requirementData = {
             clerkUserId: userId,
             item,
             quantity: Number(quantity),
             unit,
             price: Number(price),
-            pincode: user.unsafeMetadata.pincode,
+            pincode,
             state: user.unsafeMetadata?.state, // Get state from user metadata
         };
 
@@ -47,6 +54,19 @@ const RequirementForm = ({ pincode, onRequirementSubmit }) => {
             setIsSubmitting(false);
         }
     };
+
+    // Conditionally render the form or a message based on the bidding window
+    if (biddingActive) {
+        return (
+            <div className="bg-white p-6 rounded-lg shadow">
+                <div className="text-center py-4 px-6 bg-blue-50 border border-blue-200 rounded-lg">
+                    <Clock className="mx-auto h-10 w-10 text-blue-500" />
+                    <h3 className="mt-3 text-lg font-semibold text-blue-800">Posting Disabled During Bidding</h3>
+                    <p className="text-blue-600 mt-1">New requirements cannot be posted while a bidding session is active (8-9 AM/PM).</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white p-6 rounded-lg shadow">
