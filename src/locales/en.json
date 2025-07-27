@@ -1,0 +1,14 @@
+{
+  "welcomeTitle": "Welcome to SupplyLink!",
+  "welcomeMessage": "Our mission is to connect vendors and suppliers directly, creating a transparent and efficient marketplace. By aggregating demand, we help vendors get the best prices and suppliers find consistent business.",
+  "vendorGuideTitle": "How to Post a Requirement",
+  "vendorStep1": "Go to your dashboard.",
+  "vendorStep2": "Fill in the details of the raw material you need: item name, quantity, and your expected price.",
+  "vendorStep3": "Submit the form. Your requirement will be added to the aggregated demand for your area.",
+  "supplierGuideTitle": "How to Place a Bid",
+  "supplierStep1": "Navigate to the 'Bidding Arena' during an active bidding window (8-9 AM/PM).",
+  "supplierStep2": "You will see aggregated demands for items in your state.",
+  "supplierStep3": "Place a bid on any item. Your bid must be lower than the current lowest bid.",
+  "nextButton": "Next",
+  "finishButton": "Go to Dashboard"
+}

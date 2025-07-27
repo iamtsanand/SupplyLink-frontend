@@ -13,6 +13,11 @@ export const createUserInDb = (userData) => {
   return api.post('/users', userData);
 };
 
+export const completeOnboarding = (data) => {
+  // Makes a PUT request to http://localhost:8001/api/users/complete-onboarding
+  return api.put('/users/complete-onboarding', data);
+};
+
 /**
  * Fetches the mock data (requirements and bids) from the backend.
  * @returns {Promise<Object>} A promise that resolves to the data from the API.

@@ -10,7 +10,6 @@ export default function Authorization() {
   const [authStep, setAuthStep] = useState('initial'); // 'initial', 'login', 'signup', 'otp'
 
   // --- Local state for this component ---
-  // The phone number is now managed locally instead of via context.
   const [phoneNumber, setPhoneNumber] = useState('');
   const [otp, setOtp] = useState('');
   const [error, setError] = useState('');
@@ -42,10 +41,6 @@ export default function Authorization() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     if (!isSignInLoaded) return;
-    // if (!/^\d{10}$/.test(phoneNumber)) {
-    //   setError('Please enter a valid 10-digit mobile number.');
-    //   return;
-    // }
     setError('');
     setIsLoading(true);
 
@@ -76,31 +71,17 @@ export default function Authorization() {
     }
   };
 
-  // Logic for Sign-Up
+  // Logic for Sign-Up (Step 1: Create attempt with phone only)
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (!isSignUpLoaded) return;
-    // if (!/^\d{10}$/.test(phoneNumber)) {
-    //   setError('Please enter a valid 10-digit mobile number.');
-    //   return;
-    // }
     setError('');
     setIsLoading(true);
 
     try {
+      // **FIX:** Only send the phone number to start the sign-up process.
       await signUp.create({
         phoneNumber: `+${phoneNumber}`,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
-        unsafeMetadata: {
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          address: formData.address,
-          city: formData.city,
-          state: formData.state,
-          pincode: formData.pincode,
-          role: formData.role,
-        }
       });
 
       await signUp.preparePhoneNumberVerification();
@@ -114,7 +95,7 @@ export default function Authorization() {
     }
   };
 
-  // Unified OTP Verification
+  // Unified OTP Verification with Onboarding Logic (Step 2: Verify and Update)
   const handleVerifyOtp = async (e) => {
     e.preventDefault();
     if (otp.length !== 6) {
@@ -125,32 +106,51 @@ export default function Authorization() {
     setIsLoading(true);
 
     try {
-      let result;
       if (isSignUpFlow) {
         if (!isSignUpLoaded) return;
-        result = await signUp.attemptPhoneNumberVerification({ code: otp });
+        const result = await signUp.attemptPhoneNumberVerification({ code: otp });
 
-        // **DATABASE INTEGRATION**
-        // After successful sign-up in Clerk, save the user to your database.
-        if (result.status === 'complete') {
-            await createUserInDb({
-                clerkUserId: result.createdUserId,
-                ...formData,
-                phoneNumber: phoneNumber,
+        // **FIX:** This block will now be correctly entered.
+        if (result.status === 'missing_requirements') {
+          // Now, update the user with the rest of the form data.
+          const updateResult = await signUp.update({
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            unsafeMetadata: { ...formData }
+          });
+
+          if (updateResult.status === 'complete') {
+            // 1. Create the user in your database
+            const dbUserResponse = await createUserInDb({
+              clerkUserId: updateResult.createdUserId,
+              ...formData,
+              phoneNumber: phoneNumber,
             });
+
+            // 2. Check the onboarding flag from the database response
+            const userNeedsOnboarding = !dbUserResponse.data.hasCompletedOnboarding;
+            // console.log(dbUserResponse);
+            // console.log('onboaing=',userNeedsOnboarding);
+            const path = userNeedsOnboarding ? '/onboarding' : '/home';
+
+            // 3. Set the session active and then navigate
+            await setSignUpActive({ session: updateResult.createdSessionId });
+            navigate(path);
+          }
+        } else if (result.status === 'complete') {
+            // Fallback for robustness
+            await setSignUpActive({ session: result.createdSessionId });
+            navigate('/home');
         }
-
       } else {
+        // Sign-in flow (existing users go directly to home)
         if (!isSignInLoaded) return;
-        result = await signIn.attemptFirstFactor({ strategy: 'phone_code', code: otp });
-      }
+        const result = await signIn.attemptFirstFactor({ strategy: 'phone_code', code: otp });
 
-      if (result.status === 'complete') {
-        const setActive = isSignUpFlow ? setSignUpActive : setSignInActive;
-        // Setting the active session is all that's needed.
-        // Clerk's hooks (useUser, useSession) will automatically update elsewhere.
-        await setActive({ session: result.createdSessionId });
-        navigate('/home');
+        if (result.status === 'complete') {
+          await setSignInActive({ session: result.createdSessionId });
+          navigate('/home');
+        }
       }
     } catch (err) {
       console.error(JSON.stringify(err, null, 2));
@@ -206,7 +206,7 @@ export default function Authorization() {
   const renderOtpForm = () => (
     <>
       <h2 className="text-2xl font-bold text-center text-gray-800">Verify OTP</h2>
-      <p className="text-center text-gray-500 mb-8">Enter the 6-digit code sent to + {phoneNumber}.</p>
+      <p className="text-center text-gray-500 mb-8">Enter the 6-digit code sent to +{phoneNumber}.</p>
       <form onSubmit={handleVerifyOtp}>
         <div className="relative mb-4">
           <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
