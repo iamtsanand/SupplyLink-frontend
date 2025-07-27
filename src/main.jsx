@@ -6,6 +6,7 @@ import './index.css';
 import App from './App.jsx';
 import { StoreContextProvider } from './context/contextStore.jsx';
 
+
 // Import your publishable key from environment variables.
 // Make sure you have a .env.local file with VITE_CLERK_PUBLISHABLE_KEY=your_key
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
