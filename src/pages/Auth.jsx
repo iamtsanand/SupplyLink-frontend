@@ -42,10 +42,10 @@ export default function Authorization() {
   const handleSignIn = async (e) => {
     e.preventDefault();
     if (!isSignInLoaded) return;
-    if (!/^\d{10}$/.test(phoneNumber)) {
-      setError('Please enter a valid 10-digit mobile number.');
-      return;
-    }
+    // if (!/^\d{10}$/.test(phoneNumber)) {
+    //   setError('Please enter a valid 10-digit mobile number.');
+    //   return;
+    // }
     setError('');
     setIsLoading(true);
 
@@ -80,10 +80,10 @@ export default function Authorization() {
   const handleSignUp = async (e) => {
     e.preventDefault();
     if (!isSignUpLoaded) return;
-    if (!/^\d{10}$/.test(phoneNumber)) {
-      setError('Please enter a valid 10-digit mobile number.');
-      return;
-    }
+    // if (!/^\d{10}$/.test(phoneNumber)) {
+    //   setError('Please enter a valid 10-digit mobile number.');
+    //   return;
+    // }
     setError('');
     setIsLoading(true);
 
