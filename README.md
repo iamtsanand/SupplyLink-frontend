@@ -1,12 +1,18 @@
-# React + Vite
+SupplyLink - FrontendA B2B Raw Material MarketplaceSupplyLink is a modern, full-stack web application designed to create a transparent and efficient marketplace for raw material vendors and suppliers. By aggregating demand from multiple vendors, the platform empowers small businesses with greater purchasing power and provides suppliers with access to larger, consolidated orders.This repository contains the complete frontend code for the SupplyLink application, built with React and Vite.FeaturesRole-Based Authentication: Secure sign-up and login for "Vendors" and "Suppliers" using mobile OTP, powered by Clerk.Multi-Language Onboarding: A welcoming, multi-step guide for new users, available in 10+ Indian languages.Vendor Dashboard:Post, view, edit, and delete raw material requirements.Posting and editing are disabled during active bidding windows to ensure market stability.A "Live Market View" showing aggregated demand and the current lowest bid for items in their pincode.Supplier Dashboard & Bidding:A personalized dashboard showing the supplier's active bids.A dedicated "Bidding Arena" to view and bid on aggregated demands at the state level.Bidding is restricted to specific time windows (8-9 AM/PM IST).Logic to prevent placing a bid higher than the current lowest bid.Ability to update an existing bid with a lower price.Supplier Verification: A flow for suppliers to submit documents for verification to gain bidding access, building a trusted marketplace.Dynamic Homepage: A modular, two-column layout featuring the user's primary dashboard alongside a scrollable, real-time feed of recently closed deals.Tech StackFramework: React (with Vite)Routing: React Router DOMStyling: Tailwind CSSAuthentication: ClerkHTTP Client: AxiosIcons: Lucide ReactGetting StartedFollow these instructions to get a local copy up and running for development and testing purposes.PrerequisitesNode.js (v18 or later)npm or yarnInstallationClone the repository:git clone https://github.com/your-username/supplylink-frontend.git
+cd supplylink-frontend
+Install NPM packages:npm install
+Set up Environment Variables:Create a .env.local file in the root of your project and add the following variables. You can get the Clerk key from your Clerk dashboard.# Your Clerk Publishable Key
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# The URL for your local backend server
+VITE_API_URL=http://localhost:8001/api
+Run the development server:npm run dev
+The application will be available at http://localhost:5173.DeploymentThis project is configured for easy deployment on Vercel.Push to GitHub: Ensure your code is pushed to a GitHub repository.Import Project on Vercel: Import the repository into your Vercel dashboard. Vercel will automatically detect it as a Vite project.Configure Environment Variables: In your Vercel project settings, add the same environment variables (VITE_CLERK_PUBLISHABLE_KEY and VITE_API_URL) that you used locally. For VITE_API_URL, use the live URL of your deployed backend.Fix 404 on Refresh: To ensure client-side routing works correctly on refresh, create a vercel.json file in the root of your project with the following content:{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
+Deploy: Vercel will automatically build and deploy your application.
