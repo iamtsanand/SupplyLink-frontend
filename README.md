@@ -45,7 +45,7 @@ Follow these instructions to get a local copy up and running for development and
 
 1.  **Clone the repository:**
     ```
-    git clone [https://github.com/your-username/supplylink-frontend.git](https://github.com/your-username/supplylink-frontend.git)
+    git clone [https://github.com/iamtsanand/supplylink-frontend.git](https://github.com/iamtsanand/supplylink-frontend.git)
     cd supplylink-frontend
     ```
 2.  **Install NPM packages:**
